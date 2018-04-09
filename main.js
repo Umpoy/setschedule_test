@@ -1,7 +1,7 @@
 var map;
 function initMap() {
     var mapOptions = {
-        zoom: 17,
+        zoom: 10,
         center: new google.maps.LatLng(33.650550, -117.747639)
     };
     map = new google.maps.Map(document.getElementById('map'),
@@ -51,7 +51,7 @@ function initMap() {
             map.fitBounds(place.geometry.viewport);
         } else {
             map.setCenter(place.geometry.location);
-            map.setZoom(17);  // Why 17? Because it looks good.
+            mapOptions.zoom(10);  // Why 17? Because it looks good.
         }
         marker.setPosition(place.geometry.location);
         marker.setVisible(true);
@@ -70,5 +70,17 @@ function initMap() {
         infowindowContent.children['place-address'].textContent = address;
         infowindow.open(map, marker);
     });
+    var circle = new google.maps.Circle({
+        map: map,
+        radius: 16093,    // 10 miles in metres
+        fillColor: 'red'
+    });
+    var circle2 = new google.maps.Circle({
+        map: map,
+        radius: 32186.9,    // 10 miles in metres
+        fillColor: 'blue'
+    });
+    circle.bindTo('center', marker, 'position');
+    circle2.bindTo('center', marker, 'position');
 }
 
