@@ -3,15 +3,20 @@
 
 <head>
     <style>
-        #map {
-            height: 400px;
-            width: 100%;
+        #map,
+        .pano {
+            height: 45vh;
+            width: 45vw;
+            display: inline-block
+        }
+
+        #pac-input {
+            width: 30vw;
         }
     </style>
 </head>
 
 <body>
-    <h3>My Google Maps Demo</h3>
     <input id="pac-input" type="text" placeholder="Enter a location">
     <div id="map"></div>
     <div id="infowindow-content">
@@ -20,7 +25,9 @@
         <br>
         <span id="place-address"></span>
     </div>
-
+    <div class="pano" id="pano1"></div>
+    <div class="pano" id="pano2"></div>
+    <div class="pano" id="pano3"></div>
 
     <script src="main.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBPIY5mYfc9X9PphO3LYvXjfU0fcFhnlHY&libraries=places&callback=initMap"

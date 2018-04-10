@@ -10,6 +10,8 @@ function initMap() {
     var directionsService = new google.maps.DirectionsService;
     var directionsDisplay = new google.maps.DirectionsRenderer({ map: map });
 
+    map.controls[google.maps.ControlPosition.TOP_RIGHT].push(document.getElementById('pac-input'))
+
 
 
     var defaultBounds = new google.maps.LatLngBounds(
@@ -58,7 +60,7 @@ function initMap() {
             map.fitBounds(place.geometry.viewport);
         } else {
             map.setCenter(place.geometry.location);
-            mapOptions.zoom(10);  // Why 17? Because it looks good.
+            mapOptions.zoom(10);
         }
         marker.setPosition(place.geometry.location);
         marker.setVisible(true);
@@ -85,13 +87,16 @@ function initMap() {
         }
         for (var i = 0; i < 3; i++) {
             var tentotwenthy = Math.floor((Math.random() * ((32186 - 16093) + 1) + 16093));
-            var hold_marker = randomGeo(center_point, tentotwenthy, i)
+            var hold_marker = randomGeo(center_point, 32186, i)
             var distance = getDistanceFromLatLonInKm(center_point.lat, center_point.long, hold_marker.lat, hold_marker.long)
             marker_array[i].distance = distance
             marker_array[i].lat = hold_marker.lat;
             marker_array[i].long = hold_marker.long;
-            if (distance < 16.0934 || distance > 32.1869) {
+            console.log(i)
+            console.log(distance)
+            if (distance < 16094 || distance > 32186) {
                 // marker_array[i].setMap(null)
+
                 marker_array.splice(i, 1)
                 i--
                 console.log('redo')
@@ -114,7 +119,9 @@ function initMap() {
             console.log('swapped')
         }
         calculateAndDisplayRoute(directionsDisplay, directionsService, address, marker_array[0], marker_array[1], marker_array[2])
-
+        for (var i = 0; i < 3; i++) {
+            render_street_view(marker_array[i].lat, marker_array[i].long, i)
+        }
 
     });
 
@@ -135,17 +142,9 @@ function initMap() {
     }
 
     function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
-        var R = 6371; // Radius of the earth in km
-        var dLat = deg2rad(lat2 - lat1);  // deg2rad below
-        var dLon = deg2rad(lon2 - lon1);
-        var a =
-            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
-            Math.sin(dLon / 2) * Math.sin(dLon / 2)
-            ;
-        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        var d = R * c; // Distance in km
-        return d;
+        var R = 6371000;
+        var a = 0.5 - Math.cos((lat2 - lat1) * Math.PI / 180) / 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * (1 - Math.cos((lon2 - lon1) * Math.PI / 180)) / 2;
+        return R * 2 * Math.asin(Math.sqrt(a));
     }
 
     function deg2rad(deg) {
@@ -167,6 +166,7 @@ function initMap() {
                     location: new google.maps.LatLng(third_point.lat, third_point.long),
                     stopover: true
                 }],
+            provideRouteAlternatives: true,
             travelMode: 'DRIVING'
         }, function (response, status) {
             // Route the directions and pass the response to a function to create
@@ -202,7 +202,9 @@ function initMap() {
         var newlon2 = xp + x0;
 
 
-
+        console.log("lat: ", newlat);
+        console.log("long: ", newlon);
+        console.log("long2: ", newlon2);
         var markerR = {
             position: { lat: newlat, lng: newlon },
         };
@@ -213,6 +215,31 @@ function initMap() {
         }
     }
 
+
+    function render_street_view(lat, long, i) {
+
+        // var panorama = new google.maps.StreetViewPanorama(
+        //     document.getElementById('pano' + (i + 1)), {
+        //         position: { lat: lat, lng: long },
+        //         pov: {
+        //             heading: 34,
+        //             pitch: 10
+        //         }
+        //     });
+        // map.setStreetView(panorama);
+
+        map = new google.maps.Map(document.getElementById('pano' + (i + 1)),
+            {
+                zoom: 13,
+                center: new google.maps.LatLng(lat, long)
+            });
+
+        var marker = new google.maps.Marker({
+            map: map,
+            position: new google.maps.LatLng(lat, long),
+            anchorPoint: new google.maps.Point(0, -29)
+        });
+    }
 }
 
 
