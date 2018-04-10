@@ -1,18 +1,15 @@
 var map;
 function initMap() {
-    // var mapOptions = {
-    //     zoom: 10,
-    //     center: new google.maps.LatLng(33.650550, -117.747639)
-    // };
 
+    var marker_array = []
     map = new google.maps.Map(document.getElementById('map'),
         {
             zoom: 10,
             center: new google.maps.LatLng(33.650550, -117.747639)
         });
+    var directionsService = new google.maps.DirectionsService;
+    var directionsDisplay = new google.maps.DirectionsRenderer({ map: map });
 
-
-    // google.maps.event.addDomListener(window, 'load', initMap)
 
 
     var defaultBounds = new google.maps.LatLngBounds(
@@ -80,22 +77,48 @@ function initMap() {
         infowindowContent.children['place-name'].textContent = place.name;
         infowindowContent.children['place-address'].textContent = address;
         infowindow.open(map, marker);
-        circle.bindTo('center', marker, 'position');
-        circle2.bindTo('center', marker, 'position');
+        // circle.bindTo('center', marker, 'position');
+        // circle2.bindTo('center', marker, 'position');
         var center_point = {
-            latitude: place.geometry.viewport.f.f,
-            longitude: place.geometry.viewport.b.b
+            lat: place.geometry.viewport.f.f,
+            long: place.geometry.viewport.b.b
         }
+        console.log(address)
         for (var i = 0; i < 3; i++) {
             var tentotwenthy = Math.floor((Math.random() * ((32186 - 16093) + 1) + 16093));
-            randomGeo(center_point, tentotwenthy)
+            marker_array.push(randomGeo(center_point, tentotwenthy, i))
         }
+        console.log(marker_array)
+        calculateAndDisplayRoute(directionsDisplay, directionsService, address)
+
     });
+    
+
+
+    function calculateAndDisplayRoute(directionsDisplay, directionsService, first_point) {
+
+        directionsService.route({
+            origin: first_point,
+            destination: new google.maps.LatLng(33.650550, -117.747639),
+            travelMode: 'DRIVING'
+        }, function (response, status) {
+            // Route the directions and pass the response to a function to create
+            // markers for each step.
+            if (status === 'OK') {
+
+                directionsDisplay.setDirections(response);
+                ;
+            } else {
+                window.alert('Directions request failed due to ' + status);
+            }
+        });
+    }
 }
 
-function randomGeo(center, radius) {
-    var y0 = center.latitude;
-    var x0 = center.longitude;
+
+function randomGeo(center, radius, i) {
+    var y0 = center.lat;
+    var x0 = center.long;
     var rd = radius / 111300; //about 111300 meters in one degree
 
     var u = Math.random();
@@ -113,10 +136,17 @@ function randomGeo(center, radius) {
     var newlon = x + x0;
     var newlon2 = xp + x0;
 
+
+
     var markerR = new google.maps.Marker({
         map: map,
         position: { lat: newlat, lng: newlon },
         draggable: true,
+        label: i.toString()
     });
-    console.log(markerR.map)
+    console.log(markerR.getPosition().lat() + markerR.getPosition().lng())
+    return {
+        lat: markerR.getPosition().lat(),
+        long: markerR.getPosition().lng()
+    }
 }
