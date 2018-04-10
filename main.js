@@ -85,22 +85,35 @@ function initMap() {
         }
         for (var i = 0; i < 3; i++) {
             var tentotwenthy = Math.floor((Math.random() * ((32186 - 16093) + 1) + 16093));
-            marker_array.push(randomGeo(center_point, tentotwenthy, i))
-            marker_array[i].distance = getDistanceFromLatLonInKm(center_point.lat, center_point.long, marker_array[i].lat, marker_array[i].long)
+            var hold_marker = randomGeo(center_point, tentotwenthy, i)
+            var distance = getDistanceFromLatLonInKm(center_point.lat, center_point.long, hold_marker.lat, hold_marker.long)
+            marker_array[i].distance = distance
+            marker_array[i].lat = hold_marker.lat;
+            marker_array[i].long = hold_marker.long;
+            if (distance < 16.0934 || distance > 32.1869) {
+                // marker_array[i].setMap(null)
+                marker_array.splice(i, 1)
+                i--
+                console.log('redo')
+            }
         }
-        console.log(address)
-        marked_array = sort_array_by_distance(marker_array)
 
+        marker_array = sort_array_by_distance(marker_array)
+        for (var z = 0; z < 3; z++) {
+            console.log(marker_array[z].distance)
+        }
         for (var j = 1; j < 3; j++) {
+            console.log("before: ", marker_array[j].distance)
             marker_array[j].distance = getDistanceFromLatLonInKm(marker_array[0].lat, marker_array[0].long, marker_array[j].lat, marker_array[j].long);
+            console.log("after: ", marker_array[j].distance)
         }
-        console.log(marker_array)
         if (marker_array[2].distance < marker_array[1].distance) {
-            var hold = marked_array[2]
-            marked_array[2] = marker_array[1];
+            var hold = marker_array[2]
+            marker_array[2] = marker_array[1];
             marker_array[1] = hold
+            console.log('swapped')
         }
-        calculateAndDisplayRoute(directionsDisplay, directionsService, address, marked_array[0], marker_array[1], marked_array[2])
+        calculateAndDisplayRoute(directionsDisplay, directionsService, address, marker_array[0], marker_array[1], marker_array[2])
 
 
     });
@@ -147,10 +160,11 @@ function initMap() {
             destination: new google.maps.LatLng(second_point.lat, second_point.long),
             waypoints: [
                 {
-                    location: new google.maps.LatLng(third_point.lat, third_point.long),
-                    stopover: false
-                }, {
                     location: new google.maps.LatLng(fourth_point.lat, fourth_point.long),
+                    stopover: true
+                },
+                {
+                    location: new google.maps.LatLng(third_point.lat, third_point.long),
                     stopover: true
                 }],
             travelMode: 'DRIVING'
@@ -166,40 +180,39 @@ function initMap() {
             }
         });
     }
-}
 
+    function randomGeo(center, radius, i) {
+        var y0 = center.lat;
+        var x0 = center.long;
+        var rd = radius / 111300; //about 111300 meters in one degree
 
-function randomGeo(center, radius, i) {
-    var y0 = center.lat;
-    var x0 = center.long;
-    var rd = radius / 111300; //about 111300 meters in one degree
+        var u = Math.random();
+        var v = Math.random();
 
-    var u = Math.random();
-    var v = Math.random();
+        var w = rd * Math.sqrt(u);
+        var t = 2 * Math.PI * v;
+        var x = w * Math.cos(t);
+        var y = w * Math.sin(t);
 
-    var w = rd * Math.sqrt(u);
-    var t = 2 * Math.PI * v;
-    var x = w * Math.cos(t);
-    var y = w * Math.sin(t);
+        //Adjust the x-coordinate for the shrinking of the east-west distances
+        var xp = x / Math.cos(y0);
 
-    //Adjust the x-coordinate for the shrinking of the east-west distances
-    var xp = x / Math.cos(y0);
-
-    var newlat = y + y0;
-    var newlon = x + x0;
-    var newlon2 = xp + x0;
+        var newlat = y + y0;
+        var newlon = x + x0;
+        var newlon2 = xp + x0;
 
 
 
-    var markerR = new google.maps.Marker({
-        map: map,
-        position: { lat: newlat, lng: newlon },
-        draggable: true,
-        label: i.toString()
-    });
-
-    return {
-        lat: markerR.getPosition().lat(),
-        long: markerR.getPosition().lng()
+        var markerR = {
+            position: { lat: newlat, lng: newlon },
+        };
+        marker_array.push(markerR)
+        return {
+            lat: newlat,
+            long: newlon
+        }
     }
+
 }
+
+
