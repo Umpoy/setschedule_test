@@ -77,29 +77,82 @@ function initMap() {
         infowindowContent.children['place-name'].textContent = place.name;
         infowindowContent.children['place-address'].textContent = address;
         infowindow.open(map, marker);
-        // circle.bindTo('center', marker, 'position');
-        // circle2.bindTo('center', marker, 'position');
+        circle.bindTo('center', marker, 'position');
+        circle2.bindTo('center', marker, 'position');
         var center_point = {
             lat: place.geometry.viewport.f.f,
             long: place.geometry.viewport.b.b
         }
-        console.log(address)
         for (var i = 0; i < 3; i++) {
             var tentotwenthy = Math.floor((Math.random() * ((32186 - 16093) + 1) + 16093));
             marker_array.push(randomGeo(center_point, tentotwenthy, i))
+            marker_array[i].distance = getDistanceFromLatLonInKm(center_point.lat, center_point.long, marker_array[i].lat, marker_array[i].long)
+        }
+        console.log(address)
+        marked_array = sort_array_by_distance(marker_array)
+
+        for (var j = 1; j < 3; j++) {
+            marker_array[j].distance = getDistanceFromLatLonInKm(marker_array[0].lat, marker_array[0].long, marker_array[j].lat, marker_array[j].long);
         }
         console.log(marker_array)
-        calculateAndDisplayRoute(directionsDisplay, directionsService, address)
+        if (marker_array[2].distance < marker_array[1].distance) {
+            var hold = marked_array[2]
+            marked_array[2] = marker_array[1];
+            marker_array[1] = hold
+        }
+        calculateAndDisplayRoute(directionsDisplay, directionsService, address, marked_array[0], marker_array[1], marked_array[2])
+
 
     });
-    
+
+    function sort_array_by_distance(array) {
+        var swapped = true;
+        while (swapped) {
+            swapped = false;
+            for (var i = 0; i < array.length - 1; i++) {
+                if (array[i].distance > array[i + 1].distance) {
+                    var hold = array[i].distance
+                    array[i].distance = array[i + 1].distance
+                    array[i + 1].distance = hold
+                    swapped = true
+                }
+            }
+        }
+        return array
+    }
+
+    function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+        var R = 6371; // Radius of the earth in km
+        var dLat = deg2rad(lat2 - lat1);  // deg2rad below
+        var dLon = deg2rad(lon2 - lon1);
+        var a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2)
+            ;
+        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        var d = R * c; // Distance in km
+        return d;
+    }
+
+    function deg2rad(deg) {
+        return deg * (Math.PI / 180)
+    }
 
 
-    function calculateAndDisplayRoute(directionsDisplay, directionsService, first_point) {
+    function calculateAndDisplayRoute(directionsDisplay, directionsService, first_point, second_point, third_point, fourth_point) {
 
         directionsService.route({
             origin: first_point,
-            destination: new google.maps.LatLng(33.650550, -117.747639),
+            destination: new google.maps.LatLng(second_point.lat, second_point.long),
+            waypoints: [
+                {
+                    location: new google.maps.LatLng(third_point.lat, third_point.long),
+                    stopover: false
+                }, {
+                    location: new google.maps.LatLng(fourth_point.lat, fourth_point.long),
+                    stopover: true
+                }],
             travelMode: 'DRIVING'
         }, function (response, status) {
             // Route the directions and pass the response to a function to create
@@ -144,7 +197,7 @@ function randomGeo(center, radius, i) {
         draggable: true,
         label: i.toString()
     });
-    console.log(markerR.getPosition().lat() + markerR.getPosition().lng())
+
     return {
         lat: markerR.getPosition().lat(),
         long: markerR.getPosition().lng()
