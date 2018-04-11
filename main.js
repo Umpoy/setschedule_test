@@ -106,7 +106,7 @@ function initMap() {
             document.getElementById("modal_map").innerHTML = '';
         }
         var div_id = $(this).attr('id').replace("pano", '')
-        render_street_view(marker_array[div_id - 1].lat, marker_array[div_id - 1].long);
+        render_street_view(marker_array[div_id].lat, marker_array[div_id].long);
     }
 
     function render_street_view(lat, long) {
@@ -203,7 +203,7 @@ function initMap() {
     }
 
     function render_waypoint_view(lat, long, i) {
-        map = new google.maps.Map(document.getElementById('pano' + (i + 1)),
+        map = new google.maps.Map(document.getElementById('pano' + i),
             {
                 zoom: 13,
                 center: new google.maps.LatLng(lat, long)
