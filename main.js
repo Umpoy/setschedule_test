@@ -98,6 +98,9 @@ function initMap() {
             marker_array[2] = marker_array[1];
             marker_array[1] = hold
         }
+        $('#pac-input').on('focus blur', function (event) {
+            $('meta[name=viewport]').attr('content', 'width=device-width,initial-scale=1,maximum-scale=' + (event.type == 'blur' ? 10 : 1));
+        });
         calculateAndDisplayRoute(directionsDisplay, directionsService, address, marker_array[0], marker_array[1], marker_array[2])
         for (var i = 0; i < 3; i++) {
             render_waypoint_view(marker_array[i].lat, marker_array[i].long, i)
