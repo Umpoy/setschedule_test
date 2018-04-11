@@ -119,15 +119,12 @@ function initMap() {
     }
 
     function button_render_street_view(hold_global) {
-        // modal.style.display = "none";
-        // document.getElementById("modal_map").innerHTML = '';
         if (hold_global == 3) {
             hold_global = 0
         }
         if (hold_global == -1) {
             hold_global = 2
         }
-        console.log(hold_global)
         $("#pano" + hold_global).click()
     }
 
@@ -187,10 +184,7 @@ function initMap() {
             provideRouteAlternatives: true,
             travelMode: 'DRIVING'
         }, function (response, status) {
-            // Route the directions and pass the response to a function to create
-            // markers for each step.
             if (status === 'OK') {
-
                 directionsDisplay.setDirections(response);
                 ;
             } else {
