@@ -1,4 +1,5 @@
 var map;
+var hold_global = null;
 function initMap() {
     var marker_array = []
     map = new google.maps.Map(document.getElementById('map'),
@@ -35,6 +36,13 @@ function initMap() {
         radius: 32186,    // 20 miles in metres
         fillColor: 'blue'
     });
+    $('#left').on("click", function () {
+        button_render_street_view(hold_global + 1);
+    });
+    $('#right').on("click", function () {
+        button_render_street_view(hold_global - 1)
+    });
+
     autocomplete.addListener('place_changed', function () {
         infowindow.close();
         marker.setVisible(false);
@@ -105,8 +113,22 @@ function initMap() {
             modal.style.display = "none";
             document.getElementById("modal_map").innerHTML = '';
         }
-        var div_id = $(this).attr('id').replace("pano", '')
+        var div_id = $(this).attr('id').replace("pano", '');
+        hold_global = parseInt(div_id)
         render_street_view(marker_array[div_id].lat, marker_array[div_id].long);
+    }
+
+    function button_render_street_view(hold_global) {
+        // modal.style.display = "none";
+        // document.getElementById("modal_map").innerHTML = '';
+        if (hold_global == 3) {
+            hold_global = 0
+        }
+        if (hold_global == -1) {
+            hold_global = 2
+        }
+        console.log(hold_global)
+        $("#pano" + hold_global).click()
     }
 
     function render_street_view(lat, long) {
