@@ -8,7 +8,8 @@
         }
 
         #map,
-        .pano {
+        .pano,
+        #modal_map {
             height: 45vh;
             width: 45vw;
             display: inline-block;
@@ -46,6 +47,12 @@
             max-width: 111vh;
             padding-bottom: 2%;
         }
+
+        .close {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
     </style>
 </head>
 
@@ -68,6 +75,7 @@
     <div class="modal" id="modal">
         <!-- Modal content -->
         <div class="modal-content">
+            <span class="close">X</span>
             <div id="modal_map"></div>
         </div>
 

@@ -92,20 +92,35 @@ function initMap() {
         }
         calculateAndDisplayRoute(directionsDisplay, directionsService, address, marker_array[0], marker_array[1], marker_array[2])
         for (var i = 0; i < 3; i++) {
-            render_street_view(marker_array[i].lat, marker_array[i].long, i)
+            render_waypoint_view(marker_array[i].lat, marker_array[i].long, i)
         }
+        $('.pano').on("click", render_pop_up);
     });
-
-    $('.pano').on("click", render_pop_up);
 
     function render_pop_up() {
         var modal = document.getElementById('modal');
         modal.style.display = "block";
         var span = document.getElementsByClassName("close")[0];
-        modal.onclick = function () {
+        span.onclick = function () {
             modal.style.display = "none";
+            document.getElementById("modal_map").innerHTML = '';
         }
+        var div_id = $(this).attr('id').replace("pano", '')
+        render_street_view(marker_array[div_id - 1].lat, marker_array[div_id - 1].long);
     }
+
+    function render_street_view(lat, long) {
+
+        var panorama = new google.maps.StreetViewPanorama(
+            document.getElementById('modal_map'), {
+                position: { lat: lat, lng: long },
+                pov: {
+                    heading: 34,
+                    pitch: 10
+                }
+            });
+        map.setStreetView(panorama);
+    };
 
     function sort_array_by_distance(array) {
         var swapped = true;
@@ -187,7 +202,7 @@ function initMap() {
         }
     }
 
-    function render_street_view(lat, long, i) {
+    function render_waypoint_view(lat, long, i) {
         map = new google.maps.Map(document.getElementById('pano' + (i + 1)),
             {
                 zoom: 13,
