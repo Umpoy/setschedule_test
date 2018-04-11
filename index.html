@@ -36,7 +36,7 @@
         }
 
         .modal-content {
-            background-color: blue;
+            background-color: grey;
             margin-top: 10vh;
             margin-left: auto;
             margin-right: auto;
@@ -46,12 +46,6 @@
             width: 90%;
             max-width: 111vh;
             padding-bottom: 2%;
-        }
-
-        .modal-content .close {
-            position: absolute;
-            margin-top: 0;
-            margin-right: 0;
         }
     </style>
 </head>
@@ -72,13 +66,26 @@
     <div class="pano" id="pano0"></div>
 
     <!-- Modal Pop Up When Render Map Appears -->
-    <div class="modal" id="modal">
-        <!-- Modal content -->
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <div id="modal_map"></div>
-        </div>
 
+
+    <div class="modal" id="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Pop Up Street View</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="modal_map"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="main.js"></script>
