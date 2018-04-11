@@ -18,6 +18,34 @@
         #pac-input {
             width: 30vw;
         }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0, 0, 0.1);
+            background-color: rgba(0, 0, 0, 0.4);
+            vertical-align: middle;
+            overflow: auto;
+        }
+
+        .modal-content {
+            background-color: blue;
+            margin-top: 10vh;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 10px;
+            border: 1px solid #888;
+            text-align: center;
+            width: 90%;
+            max-width: 111vh;
+            padding-bottom: 2%;
+        }
     </style>
 </head>
 
@@ -36,6 +64,14 @@
     <div class="pano" id="pano2"></div>
     <div class="pano" id="pano3"></div>
 
+    <!-- Modal Pop Up When Render Map Appears -->
+    <div class="modal" id="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <div id="modal_map"></div>
+        </div>
+
+    </div>
 
     <script src="main.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBPIY5mYfc9X9PphO3LYvXjfU0fcFhnlHY&libraries=places&callback=initMap"

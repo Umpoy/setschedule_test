@@ -96,6 +96,17 @@ function initMap() {
         }
     });
 
+    $('.pano').on("click", render_pop_up);
+
+    function render_pop_up() {
+        var modal = document.getElementById('modal');
+        modal.style.display = "block";
+        var span = document.getElementsByClassName("close")[0];
+        modal.onclick = function () {
+            modal.style.display = "none";
+        }
+    }
+
     function sort_array_by_distance(array) {
         var swapped = true;
         while (swapped) {
