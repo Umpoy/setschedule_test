@@ -1,6 +1,5 @@
 var map;
 function initMap() {
-
     var marker_array = []
     map = new google.maps.Map(document.getElementById('map'),
         {
@@ -9,16 +8,11 @@ function initMap() {
         });
     var directionsService = new google.maps.DirectionsService;
     var directionsDisplay = new google.maps.DirectionsRenderer({ map: map });
-
-    map.controls[google.maps.ControlPosition.TOP_RIGHT].push(document.getElementById('pac-input'))
-
-
-
+    // map.controls[google.maps.ControlPosition.TOP_RIGHT].push(document.getElementById('pac-input'))
     var defaultBounds = new google.maps.LatLngBounds(
         new google.maps.LatLng(33.650550, -117.747639),
         new google.maps.LatLng(33.700550, -117.837639)
     )
-
     var options = {
         bounds: defaultBounds
     }
@@ -27,7 +21,6 @@ function initMap() {
     var infowindow = new google.maps.InfoWindow();
     var infowindowContent = document.getElementById('infowindow-content');
     infowindow.setContent(infowindowContent);
-
     var marker = new google.maps.Marker({
         map: map,
         anchorPoint: new google.maps.Point(0, -29)
@@ -36,26 +29,20 @@ function initMap() {
         map: map,
         radius: 16093,    // 10 miles in metres
         fillColor: 'red'
-
     });
     var circle2 = new google.maps.Circle({
         map: map,
         radius: 32186,    // 20 miles in metres
         fillColor: 'blue'
     });
-
     autocomplete.addListener('place_changed', function () {
         infowindow.close();
         marker.setVisible(false);
         var place = autocomplete.getPlace();
         if (!place.geometry) {
-            // User entered the name of a Place that was not suggested and
-            // pressed the Enter key, or the Place Details request failed.
             window.alert("No details available for input: '" + place.name + "'");
             return;
         }
-
-        // If the place has a geometry, then present it on a map.
         if (place.geometry.viewport) {
             map.fitBounds(place.geometry.viewport);
         } else {
@@ -64,8 +51,6 @@ function initMap() {
         }
         marker.setPosition(place.geometry.location);
         marker.setVisible(true);
-
-
         var address = '';
         if (place.address_components) {
             address = [
@@ -74,7 +59,6 @@ function initMap() {
                 (place.address_components[2] && place.address_components[2].short_name || '')
             ].join(' ');
         }
-
         infowindowContent.children['place-icon'].src = place.icon;
         infowindowContent.children['place-name'].textContent = place.name;
         infowindowContent.children['place-address'].textContent = address;
@@ -92,37 +76,24 @@ function initMap() {
             marker_array[i].distance = distance
             marker_array[i].lat = hold_marker.lat;
             marker_array[i].long = hold_marker.long;
-            console.log(i)
-            console.log(distance)
             if (distance < 16094 || distance > 32186) {
-                // marker_array[i].setMap(null)
-
                 marker_array.splice(i, 1)
                 i--
-                console.log('redo')
             }
         }
-
         marker_array = sort_array_by_distance(marker_array)
-        for (var z = 0; z < 3; z++) {
-            console.log(marker_array[z].distance)
-        }
         for (var j = 1; j < 3; j++) {
-            console.log("before: ", marker_array[j].distance)
             marker_array[j].distance = getDistanceFromLatLonInKm(marker_array[0].lat, marker_array[0].long, marker_array[j].lat, marker_array[j].long);
-            console.log("after: ", marker_array[j].distance)
         }
         if (marker_array[2].distance < marker_array[1].distance) {
             var hold = marker_array[2]
             marker_array[2] = marker_array[1];
             marker_array[1] = hold
-            console.log('swapped')
         }
         calculateAndDisplayRoute(directionsDisplay, directionsService, address, marker_array[0], marker_array[1], marker_array[2])
         for (var i = 0; i < 3; i++) {
             render_street_view(marker_array[i].lat, marker_array[i].long, i)
         }
-
     });
 
     function sort_array_by_distance(array) {
@@ -150,7 +121,6 @@ function initMap() {
     function deg2rad(deg) {
         return deg * (Math.PI / 180)
     }
-
 
     function calculateAndDisplayRoute(directionsDisplay, directionsService, first_point, second_point, third_point, fourth_point) {
 
@@ -185,26 +155,17 @@ function initMap() {
         var y0 = center.lat;
         var x0 = center.long;
         var rd = radius / 111300; //about 111300 meters in one degree
-
         var u = Math.random();
         var v = Math.random();
-
         var w = rd * Math.sqrt(u);
         var t = 2 * Math.PI * v;
         var x = w * Math.cos(t);
         var y = w * Math.sin(t);
-
         //Adjust the x-coordinate for the shrinking of the east-west distances
         var xp = x / Math.cos(y0);
-
         var newlat = y + y0;
         var newlon = x + x0;
         var newlon2 = xp + x0;
-
-
-        console.log("lat: ", newlat);
-        console.log("long: ", newlon);
-        console.log("long2: ", newlon2);
         var markerR = {
             position: { lat: newlat, lng: newlon },
         };
@@ -215,19 +176,7 @@ function initMap() {
         }
     }
 
-
     function render_street_view(lat, long, i) {
-
-        // var panorama = new google.maps.StreetViewPanorama(
-        //     document.getElementById('pano' + (i + 1)), {
-        //         position: { lat: lat, lng: long },
-        //         pov: {
-        //             heading: 34,
-        //             pitch: 10
-        //         }
-        //     });
-        // map.setStreetView(panorama);
-
         map = new google.maps.Map(document.getElementById('pano' + (i + 1)),
             {
                 zoom: 13,
