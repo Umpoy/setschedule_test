@@ -129,7 +129,6 @@ function initMap() {
     }
 
     function render_street_view(lat, long) {
-
         var panorama = new google.maps.StreetViewPanorama(
             document.getElementById('modal_map'), {
                 position: { lat: lat, lng: long },
